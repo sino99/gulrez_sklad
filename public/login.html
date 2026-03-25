@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Вход — Склад Цветочного Магазина</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  :root {
+    --bg:     #0c0b09;
+    --s1:     #161310;
+    --s2:     #1e1a16;
+    --border: #2d2620;
+    --rose:   #c8705a;
+    --rose2:  #e8967e;
+    --cream:  #f0e8dc;
+    --muted:  #7a6d62;
+    --muted2: #4a3f38;
+    --gold:   #c9a050;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Simple animated gradient background instead of petals */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(200,112,90,0.08), transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(125,168,122,0.08), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .login-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .login-logo .flower {
+    font-size: 52px;
+    display: block;
+    margin-bottom: 12px;
+    animation: breathe 4s ease-in-out infinite;
+    color: var(--rose);
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+  .login-logo h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.5px;
+  }
+  .login-logo p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 5px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .login-card {
+    background: var(--s1);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.5);
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 8px;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap .ico {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--muted2);
+    pointer-events: none;
+  }
+  .field input {
+    width: 100%;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    padding: 13px 14px 13px 42px;
+    border-radius: 12px;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field input:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(200,112,90,.12);
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--rose), var(--rose2));
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,112,90,.35); }
+  .btn-login:active { transform: translateY(0); }
+
+  .error-msg {
+    background: rgba(184,85,64,.12);
+    border: 1px solid rgba(184,85,64,.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #e08070;
+    margin-bottom: 16px;
+    display: none;
+    text-align: center;
+  }
+  .error-msg.show { display: block; animation: shake .3s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--muted2);
+  }
+  .login-footer span { color: var(--muted); }
+
+  .loading .btn-login { opacity: .7; pointer-events: none; }
+
+  /* Mobile adjustments */
+  @media (max-width: 480px) {
+    .login-wrap { padding: 16px; }
+    .login-card { padding: 24px 20px; }
+    .login-logo .flower { font-size: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-logo">
+    <div class="flower"><i class="fas fa-leaf"></i></div>
+    <h1>Мой Склад</h1>
+    <p>Цветочный магазин</p>
+  </div>
+
+  <div class="login-card" id="login-card">
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="field">
+      <label>Логин</label>
+      <div class="input-wrap">
+        <span class="ico"><i class="fas fa-user"></i></span>
+        <input type="text" id="login" placeholder="Введите логин" autocomplete="username" autofocus>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Пароль</label>
+      <div class="input-wrap">
+        <span class="ico"><i class="fas fa-lock"></i></span>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> Войти
+    </button>
+
+    <div class="login-footer">
+      <span><i class="fas fa-seedling"></i> Склад · Все права защищены</span>
+    </div>
+  </div>
+</div>
+
+<script>
+async function doLogin() {
+  const login    = document.getElementById('login').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl    = document.getElementById('error-msg');
+
+  if (!login || !password) {
+    showError('Заполните все поля');
+    return;
+  }
+
+  document.getElementById('login-card').classList.add('loading');
+
+  const res  = await fetch('/api/auth/login', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ login, password }),
+  });
+  const data = await res.json();
+
+  document.getElementById('login-card').classList.remove('loading');
+
+  if (data.ok) {
+    window.location.href = '/';
+  } else {
+    showError(data.error || 'Ошибка входа');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

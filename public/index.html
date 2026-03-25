@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Склад — Цветочный Магазин Gulrez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="sidebar-flower"><i class="fas fa-seedling"></i></span>
+    <div>
+      <div class="sidebar-title">Мой Склад</div>
+      <div class="sidebar-sub">Цветочный магазин Gulrez</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-page="dashboard">
+      <span class="nav-icon"><i class="fas fa-chart-line"></i></span><span>Дашборд</span>
+    </button>
+    <button class="nav-item" data-page="inventory">
+      <span class="nav-icon"><i class="fas fa-boxes"></i></span><span>Склад</span>
+    </button>
+    <button class="nav-item" data-page="report">
+      <span class="nav-icon"><i class="fas fa-file-alt"></i></span><span>Отчёты</span>
+    </button>
+    <button class="nav-item admin-only" data-page="users" style="display:none">
+      <span class="nav-icon"><i class="fas fa-users"></i></span><span>Пользователи</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar" id="user-avatar">G</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">...</div>
+        <div class="user-role" id="user-role">...</div>
+      </div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="sa-btn" onclick="openChangePassword()" title="Сменить пароль"><i class="fas fa-key"></i></button>
+      <button class="sa-btn" onclick="doLogout()" title="Выйти"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main" id="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-title" id="topbar-title">Дашборд</div>
+    <div class="topbar-right">
+      <div class="clock" id="clock"></div>
+    </div>
+  </header>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="promo-banner" id="promo-banner">
+      <div class="promo-icon" id="promo-icon"><i class="fas fa-calendar-alt"></i></div>
+      <div>
+        <div class="promo-title" id="promo-title">Загрузка...</div>
+        <div class="promo-text" id="promo-text"></div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi rose"><div class="kpi-ico"><i class="fas fa-flower"></i></div><div class="kpi-val" id="k-total">—</div><div class="kpi-lbl">Позиций</div></div>
+      <div class="kpi sage"><div class="kpi-ico"><i class="fas fa-cubes"></i></div><div class="kpi-val" id="k-qty">—</div><div class="kpi-lbl">Штук на складе</div></div>
+      <div class="kpi gold"><div class="kpi-ico"><i class="fas fa-ruble-sign"></i></div><div class="kpi-val" id="k-val">—</div><div class="kpi-lbl">Стоимость</div></div>
+      <div class="kpi red"><div class="kpi-ico"><i class="fas fa-exclamation-triangle"></i></div><div class="kpi-val" id="k-low">—</div><div class="kpi-lbl">Мало / нет</div></div>
+    </div>
+
+    <div class="dash-row">
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-chart-simple"></i> Движения за 7 дней</span></div>
+        <div class="card-body"><div class="bar-chart" id="week-chart"></div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="ldot" style="background:var(--rose)"></div>Выдано</div>
+            <div class="legend-item"><div class="ldot" style="background:var(--sage)"></div>Принято</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-trophy"></i> Топ по остатку</span></div>
+        <div class="card-body" id="top-items"></div>
+      </div>
+    </div>
+
+    <div class="dash-row">
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-history"></i> Последние действия</span></div>
+        <div class="card-body" id="activity-feed"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-tags"></i> По категориям</span></div>
+        <div class="card-body" id="cat-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY ══ -->
+  <div class="page" id="page-inventory">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="si"><i class="fas fa-search"></i></span>
+        <input type="text" id="search" placeholder="Поиск по названию, артикулу, поставщику...">
+      </div>
+      <select id="f-cat"><option value="">Все категории</option></select>
+      <select id="f-status">
+        <option value="">Все статусы</option>
+        <option value="ok">В наличии</option>
+        <option value="low">Мало</option>
+        <option value="out">Нет</option>
+      </select>
+      <div class="view-toggle">
+        <button class="vt active" id="vt-table" onclick="setView('table')" title="Таблица"><i class="fas fa-table"></i></button>
+        <button class="vt" id="vt-grid"  onclick="setView('grid')"  title="Плитка"><i class="fas fa-th-large"></i></button>
+      </div>
+      <button class="btn btn-ghost" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+      <button class="btn btn-primary" onclick="openAddItem()"><i class="fas fa-plus"></i> Добавить</button>
+    </div>
+
+    <div class="cats" id="cat-tabs"></div>
+    <div class="alerts-wrap" id="inv-alerts"></div>
+
+    <div id="view-table">
+      <div class="table-wrap">
+        <table>
+          <thead>…
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="view-grid" class="cards-grid" style="display:none"></div>
+  </div>
+
+  <!-- ══ REPORT ══ -->
+  <div class="page" id="page-report">
+    <div class="report-bar">
+      <div class="period-btns">
+        <button class="period-btn active" onclick="setPeriod(7,this)">7 дней</button>
+        <button class="period-btn" onclick="setPeriod(14,this)">14 дней</button>
+        <button class="period-btn" onclick="setPeriod(30,this)">30 дней</button>
+      </div>
+      <button class="btn btn-ghost" onclick="exportCSV()"><i class="fas fa-download"></i> Экспорт CSV</button>
+    </div>
+
+    <div class="report-kpis">
+      <div class="report-kpi"><div class="rk-val" id="r-ops">—</div><div class="rk-lbl">Операций</div></div>
+      <div class="report-kpi"><div class="rk-val" id="r-out">—</div><div class="rk-lbl">Выдано единиц</div></div>
+      <div class="report-kpi"><div class="rk-val" id="r-in">—</div><div class="rk-lbl">Принято единиц</div></div>
+    </div>
+
+    <div class="dash-row">
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-chart-line"></i> График по дням</span></div>
+        <div class="card-body">
+          <div class="bar-chart" id="report-chart"></div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="ldot" style="background:var(--rose)"></div>Выдано</div>
+            <div class="legend-item"><div class="ldot" style="background:var(--sage)"></div>Принято</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title"><i class="fas fa-chart-pie"></i> По категориям (выдача)</span></div>
+        <div class="card-body" id="r-cat-chart"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <span class="card-title"><i class="fas fa-list"></i> История движений</span>
+        <select id="r-item-filter" onchange="renderReport()" class="mobile-filter">
+          <option value="">Все товары</option>
+        </select>
+      </div>
+      <!-- Табличный вид (десктоп) -->
+      <div id="history-table-view" style="overflow-x:auto">
+        <table class="history-table">
+          <thead>…
+          </thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+      <!-- Карточный вид (мобильный) -->
+      <div id="history-cards-view" class="history-cards" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ══ USERS ══ -->
+  <div class="page" id="page-users">
+    <div class="toolbar">
+      <div style="flex:1"></div>
+      <button class="btn btn-primary" onclick="openAddUser()"><i class="fas fa-user-plus"></i> Добавить</button>
+    </div>
+    <!-- Таблица (десктоп) -->
+    <div id="users-table-view" class="table-wrap" style="overflow-x:auto">
+      <table>
+        <thead>…
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+    <!-- Карточки (мобильный) -->
+    <div id="users-cards-view" class="users-cards-grid" style="display:none"></div>
+  </div>
+
+</main>
+
+<!-- ══ MODAL: ITEM ══ -->
+<div class="overlay" id="modal-item">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-title" id="item-modal-title">Добавить товар</div>
+      <button class="modal-close" onclick="closeModal('modal-item')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="photo-upload-area" id="photo-area" onclick="document.getElementById('photo-file').click()">
+        <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="handlePhotoSelect(this)">
+        <div id="photo-preview">
+          <div style="font-size:36px;margin-bottom:8px"><i class="fas fa-camera"></i></div>
+          <div style="font-size:13px;color:var(--muted)">Нажмите чтобы загрузить фото<br><small style="color:var(--muted2)">JPG, PNG, WEBP до 5 МБ</small></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field"><label>Название *</label><input id="fi-name" type="text" placeholder="Роза красная"></div>
+        <div class="field"><label>Эмодзи</label><input id="fi-emoji" type="text" placeholder="🌹" maxlength="2"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Категория *</label><select id="fi-cat"></select></div>
+        <div class="field"><label>Артикул (SKU)</label><input id="fi-sku" type="text" placeholder="FL-001"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Количество *</label><input id="fi-qty" type="number" min="0" placeholder="0"></div>
+        <div class="field"><label>Мин. остаток</label><input id="fi-min" type="number" min="0" placeholder="10"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Цена закупки (₽)</label><input id="fi-price" type="number" min="0" placeholder="0"></div>
+        <div class="field"><label>Единица</label>
+          <select id="fi-unit">
+            <option value="шт">шт</option><option value="кг">кг</option>
+            <option value="л">л</option><option value="м">м</option><option value="упак">упак</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field" style="grid-column:1/-1"><label>Поставщик</label><input id="fi-supplier" type="text" placeholder="ООО Флора"></div>
+      </div>
+      <div class="form-row">
+        <div class="field" style="grid-column:1/-1"><label>Примечание</label><textarea id="fi-note" placeholder="Доп. информация..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-item')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveItem()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: MOVE ══ -->
+<div class="overlay" id="modal-move">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <div class="modal-title" id="move-title">Приход / Расход</div>
+      <button class="modal-close" onclick="closeModal('modal-move')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="move-type-row">
+        <button class="move-type-btn active" id="move-in-btn"  onclick="setMoveType('in')"><i class="fas fa-arrow-down"></i> Приход</button>
+        <button class="move-type-btn"        id="move-out-btn" onclick="setMoveType('out')"><i class="fas fa-arrow-up"></i> Выдача</button>
+      </div>
+      <div class="field" style="margin-top:16px"><label>Количество *</label><input id="move-qty" type="number" min="1" placeholder="1"></div>
+      <div class="field"><label>Примечание</label><input id="move-note" type="text" placeholder="Поступление от поставщика..."></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-move')">Отмена</button>
+      <button class="btn btn-primary" onclick="doMove()">Подтвердить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: USER ══ -->
+<div class="overlay" id="modal-user">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <div class="modal-title" id="user-modal-title">Добавить пользователя</div>
+      <button class="modal-close" onclick="closeModal('modal-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Логин *</label><input id="u-login" type="text" placeholder="username"></div>
+      <div class="field"><label>Имя</label><input id="u-name" type="text" placeholder="Иван Иванов"></div>
+      <div class="field"><label>Пароль *</label><input id="u-pass" type="password" placeholder="••••••"></div>
+      <div class="field"><label>Роль</label>
+        <select id="u-role">
+          <option value="user">Сотрудник</option>
+          <option value="admin">Администратор</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-user')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveUser()">Создать</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: CHANGE PASSWORD ══ -->
+<div class="overlay" id="modal-pass">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <div class="modal-title"><i class="fas fa-key"></i> Смена пароля</div>
+      <button class="modal-close" onclick="closeModal('modal-pass')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Текущий пароль</label><input id="cp-current" type="password" placeholder="••••••"></div>
+      <div class="field"><label>Новый пароль</label><input id="cp-new" type="password" placeholder="••••••"></div>
+      <div class="field"><label>Повторите пароль</label><input id="cp-confirm" type="password" placeholder="••••••"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-pass')">Отмена</button>
+      <button class="btn btn-primary" onclick="doChangePassword()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: RESET PASSWORD ══ -->
+<div class="overlay" id="modal-reset-pass">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <div class="modal-title" id="reset-pass-title">Сброс пароля</div>
+      <button class="modal-close" onclick="closeModal('modal-reset-pass')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Новый пароль</label><input id="rp-new" type="password" placeholder="••••••"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-reset-pass')">Отмена</button>
+      <button class="btn btn-primary" onclick="doResetPassword()">Сбросить</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO VIEW -->
+<div class="overlay" id="modal-photo">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head">
+      <div class="modal-title" id="photo-view-title">Фото</div>
+      <button class="modal-close" onclick="closeModal('modal-photo')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <img id="photo-view-img" src="" style="max-width:100%;border-radius:12px;max-height:420px;object-fit:contain">
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
